@@ -27,6 +27,11 @@ class RenderContext:
         return ctypes.cast(address, ctypes.c_void_p).value
 
     def darwin_context(self):
+        # try:
+        #     import glfw
+        #     return self.glfw_implementation
+        # except AttributeError:
+        #     pass
         try:
             from OpenGL import GLUT
             return self.glut_implementation
@@ -49,8 +54,13 @@ class RenderContext:
 
     def windows_context(self):
         try:
-            from OpenGL import GLX
+            import glfw
             return self.glfw_implementation
+        except AttributeError:
+            pass
+        try:
+            from OpenGL import GLUT
+            return self.glut_implementation
         except AttributeError:
             pass
         raise 'Cannot initialize OpenGL'
@@ -77,12 +87,12 @@ class RenderContext:
             raise 'Cannot initialize OpenGL'
 
         glfw.window_hint(glfw.VISIBLE, glfw.FALSE)
-        window = glfw.create_window(1, 1, "mpvQC-OpenGL", None, None)
+        window = glfw.create_window(1, 1, "", None, None)
 
         glfw.make_context_current(window)
         context = QOpenGLContext.currentContext()
         context.makeCurrent(self._surface)
-        return glfw.get_proc_address(name)
+        return glfw.get_proc_address(name.decode('utf-8'))
 
 
 
