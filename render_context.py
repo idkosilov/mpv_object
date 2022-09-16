@@ -27,14 +27,14 @@ class RenderContext:
         return ctypes.cast(address, ctypes.c_void_p).value
 
     def darwin_context(self):
-        # try:
-        #     import glfw
-        #     return self.glfw_implementation
-        # except AttributeError:
-        #     pass
         try:
             from OpenGL import GLUT
             return self.glut_implementation
+        except AttributeError:
+            pass
+        try:
+            import glfw
+            return self.glfw_implementation
         except AttributeError:
             pass
         raise 'Cannot initialize OpenGL'
