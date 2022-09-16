@@ -80,6 +80,11 @@ class RenderContext:
         from OpenGL import EGL
         return EGL.eglGetProcAddress(name)
 
+    @staticmethod
+    def wgl_implementation(name: bytes):
+        from OpenGL import WGL
+        return WGL.wglGetProcAddress(name)
+
     def glfw_implementation(self, name: bytes):
         import glfw
 
