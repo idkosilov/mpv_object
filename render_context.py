@@ -54,6 +54,11 @@ class RenderContext:
 
     def windows_context(self):
         try:
+            import OpenGL.WGL
+            return self.wgl_implementation
+        except AttributeError:
+            pass
+        try:
             import glfw
             return self.glfw_implementation
         except AttributeError:

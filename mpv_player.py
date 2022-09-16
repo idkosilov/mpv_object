@@ -22,7 +22,7 @@ class MpvPlayer(QQuickFramebufferObject):
     def play(self, url: str) -> None:
         self.mpv_instance.play(url)
 
-    def createRenderer(self) -> 'QQuickFramebufferObject.Renderer':
+    def createRenderer(self) -> QQuickFramebufferObject.Renderer:
         self._renderer = MpvRenderer(self)
         return self._renderer
 
