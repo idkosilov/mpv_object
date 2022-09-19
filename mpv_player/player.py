@@ -3,8 +3,8 @@ from PySide6.QtOpenGL import QOpenGLFramebufferObject
 from PySide6.QtQml import QmlElement
 from PySide6.QtQuick import QQuickFramebufferObject
 
-from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
-from render_context import RenderContext
+from mpv_player.mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
+from mpv_player.render_context import RenderContext
 
 QML_IMPORT_NAME = "mpvplayer"
 QML_IMPORT_MAJOR_VERSION = 1
@@ -50,7 +50,7 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
     def render(self) -> None:
         if self.render_context is not None:
             rectangle = self._mpv_player.size()
-            width = int(rectangle.width())
-            height = int(rectangle.height())
+            width = int(rectangle.width()*2)
+            height = int(rectangle.height()*2)
             fbo = int(self.framebufferObject().handle())
             self.render_context.render(flip_y=False, opengl_fbo={"w": width, "h": height, "fbo": fbo})
