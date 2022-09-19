@@ -58,3 +58,11 @@ class MpvRenderer(QQuickFramebufferObject.Renderer):
             height = int(rectangle.height() * self.y_scale)
             fbo = int(self.framebufferObject().handle())
             self._mpv_render_context.render(flip_y=False, opengl_fbo={"w": width, "h": height, "fbo": fbo})
+
+    def __del__(self):
+        self._mpv_render_context.free()
+        del self._mpv_render_context
+        glfw.destroy_window(self._glfw_window)
+        glfw.terminate()
+        self._opengl_context.doneCurrent()
+

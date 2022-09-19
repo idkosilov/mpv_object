@@ -26,3 +26,8 @@ class MpvPlayer(QQuickFramebufferObject):
     def createRenderer(self) -> QQuickFramebufferObject.Renderer:
         self._renderer = MpvRenderer(self)
         return self._renderer
+
+    def __del__(self):
+        self.do_update.disconnect(self.update)
+        del self._renderer
+        del self.mpv_instance
