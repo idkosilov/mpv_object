@@ -1,4 +1,3 @@
-import ctypes
 from typing import Callable, Any
 
 from PySide6.QtCore import QSize
