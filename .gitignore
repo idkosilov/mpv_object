@@ -1,6 +1,3 @@
 .idea
 __pycache__
-*.MOV
-*.mov
-*.mp4
-*.mkv
+
