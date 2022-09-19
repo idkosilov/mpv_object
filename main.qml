@@ -15,7 +15,7 @@ Window {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: renderer.play("test.mkv")
+            onClicked: renderer.play("test.mp4")
         }
     }
 

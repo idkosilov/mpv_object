@@ -1,10 +1,9 @@
-from PySide6.QtCore import QObject, Slot, QSize
-from PySide6.QtOpenGL import QOpenGLFramebufferObject
+from PySide6.QtCore import QObject, Slot, Signal
 from PySide6.QtQml import QmlElement
 from PySide6.QtQuick import QQuickFramebufferObject
 
-from mpv_player.mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
-from mpv_player.render_context import RenderContext
+from mpv import MPV
+from renderer import MpvRenderer
 
 QML_IMPORT_NAME = "mpvplayer"
 QML_IMPORT_MAJOR_VERSION = 1
@@ -12,11 +11,13 @@ QML_IMPORT_MAJOR_VERSION = 1
 
 @QmlElement
 class MpvPlayer(QQuickFramebufferObject):
+    do_update = Signal()
 
     def __init__(self, parent: QObject = None):
         super().__init__(parent)
-        self.mpv_instance = MPV(vo='libmpv', hwdec='videotoolbox')
+        self.mpv_instance = MPV(vo='libmpv')
         self._renderer = None
+        self.do_update.connect(self.update)
 
     @Slot(str)
     def play(self, url: str) -> None:
@@ -25,32 +26,3 @@ class MpvPlayer(QQuickFramebufferObject):
     def createRenderer(self) -> QQuickFramebufferObject.Renderer:
         self._renderer = MpvRenderer(self)
         return self._renderer
-
-
-class MpvRenderer(QQuickFramebufferObject.Renderer):
-
-    def __init__(self, mpv_player: MpvPlayer):
-        super().__init__()
-        self._mpv_player = mpv_player
-        self._get_proc_address_function = MpvGlGetProcAddressFn(RenderContext().get_proc_address)
-        self.render_context = None
-
-    def createFramebufferObject(self, size: QSize) -> QOpenGLFramebufferObject:
-        if self.render_context is None:
-            self.render_context = MpvRenderContext(
-                self._mpv_player.mpv_instance,
-                api_type='opengl',
-                opengl_init_params={'get_proc_address': self._get_proc_address_function}
-            )
-
-            self.render_context.update_cb = self._mpv_player.update
-
-        return QQuickFramebufferObject.Renderer.createFramebufferObject(self, size)
-
-    def render(self) -> None:
-        if self.render_context is not None:
-            rectangle = self._mpv_player.size()
-            width = int(rectangle.width()*2)
-            height = int(rectangle.height()*2)
-            fbo = int(self.framebufferObject().handle())
-            self.render_context.render(flip_y=False, opengl_fbo={"w": width, "h": height, "fbo": fbo})
